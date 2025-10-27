@@ -48,8 +48,8 @@ export const Register: React.FC = () => {
             return;
         }
 
-        if (formData.password.length < 8) {
-            setError("Password must be at least 8 characters long");
+        if (formData.password.length < 6) {
+            setError("Password must be at least 6 characters long");
             setLoading(false);
             return;
         }
@@ -61,13 +61,39 @@ export const Register: React.FC = () => {
         }
 
         try {
-            // TODO: Implement actual registration logic
-            await new Promise((resolve) => setTimeout(resolve, 1500));
+            // Call Register API
+            const response = await fetch(
+                "http://localhost:5000/api/auth/register",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        name: formData.fullName,
+                        email: formData.email,
+                        password: formData.password,
+                        confirmPassword: formData.confirmPassword,
+                    }),
+                }
+            );
 
-            // Simulate successful registration
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.message || "Registration failed");
+            }
+
+            // Save token to localStorage
+            if (data.data.token) {
+                localStorage.setItem("token", data.data.token);
+                localStorage.setItem("user", JSON.stringify(data.data.user));
+            }
+
+            // Redirect to dashboard
             navigate("/dashboard");
-        } catch (err) {
-            setError("Registration failed. Please try again.");
+        } catch (err: any) {
+            setError(err.message || "Registration failed. Please try again.");
         } finally {
             setLoading(false);
         }
@@ -175,7 +201,7 @@ export const Register: React.FC = () => {
                                     value={formData.password}
                                     onChange={handleChange}
                                     className="w-full py-3 pl-10 pr-12 transition-all duration-200 border rounded-lg border-slate-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                    placeholder="Create a password (min. 8 characters)"
+                                    placeholder="Create a password (min. 6 characters)"
                                 />
                                 <button
                                     type="button"

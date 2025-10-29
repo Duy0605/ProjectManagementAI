@@ -58,7 +58,6 @@ o	Hỗ trợ thay đổi trạng thái task theo quy trình: To Do → In Progre
 o	Cho phép kéo thả task trực quan trên bảng Kanban.
 o	Cho phép xem chi tiết task (mô tả, tiến độ, thành viên thực hiện).
 •	Trò chuyện và cộng tác: Người dùng có thể trao đổi, gửi file, và thảo luận trực tiếp trong từng dự án:
-o	Cho phép nhắn tin cá nhân (1-1) giữa hai người dùng.
 o	Cho phép nhắn tin nhóm trong phạm vi từng dự án.
 o	Hỗ trợ gửi file đính kèm (ảnh, tài liệu, video nhỏ, link).
 o	Tin nhắn hiển thị real-time (sử dụng Socket.IO hoặc WebSocket).

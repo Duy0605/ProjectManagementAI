@@ -12,6 +12,7 @@ import { Settings } from "./pages/Settings";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { ForgotPassword } from "./pages/ForgotPassword";
+import { ResetPassword } from "./pages/ResetPassword";
 
 function App() {
     return (
@@ -26,6 +27,7 @@ function App() {
                         path="/forgot-password"
                         element={<ForgotPassword />}
                     />
+                    <Route path="/reset-password" element={<ResetPassword />} />
 
                     {/* Dashboard Routes */}
                     <Route path="/dashboard" element={<Layout />}>

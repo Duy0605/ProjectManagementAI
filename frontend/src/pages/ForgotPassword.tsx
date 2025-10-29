@@ -30,13 +30,30 @@ export const ForgotPassword: React.FC = () => {
         }
 
         try {
-            // TODO: Implement actual password reset logic
-            await new Promise((resolve) => setTimeout(resolve, 1500));
+            // Gọi API backend để gửi email reset password
+            const response = await fetch(
+                "http://localhost:5000/api/auth/forgot-password",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({ email }),
+                }
+            );
 
-            // Simulate successful request
+            const data = await response.json();
+
+            if (!response.ok) {
+                setError(data.message || "Có lỗi xảy ra. Vui lòng thử lại.");
+                return;
+            }
+
+            // Thành công - hiển thị success message
             setSuccess(true);
         } catch (err) {
-            setError("Failed to send reset link. Please try again.");
+            console.error("❌ Error:", err);
+            setError("Không thể kết nối đến server. Vui lòng thử lại.");
         } finally {
             setLoading(false);
         }

@@ -35,6 +35,14 @@ const userSchema = new mongoose.Schema(
             enum: ["admin", "manager", "member"],
             default: "member",
         },
+        resetPasswordToken: {
+            type: String,
+            select: false, // Không trả về mặc định
+        },
+        resetPasswordExpires: {
+            type: Date,
+            select: false, // Không trả về mặc định
+        },
         createdAt: {
             type: Date,
             default: Date.now,

@@ -86,6 +86,7 @@ export const Sidebar: React.FC = () => {
                         <li key={item.name}>
                             <NavLink
                                 to={item.href}
+                                end={item.href === "/dashboard"}
                                 className={({ isActive }) =>
                                     clsx(
                                         "flex items-center px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 group",

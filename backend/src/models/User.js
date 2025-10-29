@@ -70,16 +70,17 @@ userSchema.virtual("ownedProjects", {
     match: { "members.role": "Owner" },
 });
 
+// ⚠️ KHÔNG hash password ở đây vì Controller đã hash rồi!
 // Hash password before saving
-userSchema.pre("save", async function (next) {
-    if (!this.isModified("passwordHash")) {
-        return next();
-    }
-
-    const salt = await bcrypt.genSalt(10);
-    this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
-    next();
-});
+// userSchema.pre("save", async function (next) {
+//     if (!this.isModified("passwordHash")) {
+//         return next();
+//     }
+//
+//     const salt = await bcrypt.genSalt(10);
+//     this.passwordHash = await bcrypt.hash(this.passwordHash, salt);
+//     next();
+// });
 
 // Update updatedAt on save
 userSchema.pre("save", function (next) {

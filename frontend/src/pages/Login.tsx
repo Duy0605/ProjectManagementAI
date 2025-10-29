@@ -28,17 +28,50 @@ export const Login: React.FC = () => {
         setError("");
 
         try {
-            // TODO: Implement actual authentication logic
-            await new Promise((resolve) => setTimeout(resolve, 1000));
+            // Gọi API backend để đăng nhập
+            const response = await fetch(
+                "http://localhost:5000/api/auth/login",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({
+                        email: formData.email,
+                        password: formData.password,
+                    }),
+                }
+            );
 
-            if (formData.email && formData.password) {
-                // Simulate successful login
+            const data = await response.json();
+
+            // Kiểm tra response có thành công không
+            if (!response.ok) {
+                // Nếu lỗi, hiển thị thông báo lỗi từ server
+                setError(data.message || "Đăng nhập thất bại");
+                return;
+            }
+
+            // Đăng nhập thành công
+            if (data.success && data.data) {
+                // Lưu token vào localStorage
+                localStorage.setItem("token", data.data.token);
+
+                // Lưu thông tin user vào localStorage
+                localStorage.setItem("user", JSON.stringify(data.data.user));
+
+                console.log("✅ Đăng nhập thành công:", data.data.user);
+
+                // Chuyển hướng đến trang Dashboard
                 navigate("/dashboard");
             } else {
-                setError("Please enter both email and password");
+                setError("Đăng nhập thất bại. Vui lòng thử lại.");
             }
         } catch (err) {
-            setError("Login failed. Please check your credentials.");
+            console.error("❌ Lỗi khi đăng nhập:", err);
+            setError(
+                "Không thể kết nối đến server. Vui lòng kiểm tra kết nối."
+            );
         } finally {
             setLoading(false);
         }

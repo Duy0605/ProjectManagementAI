@@ -137,36 +137,54 @@ class UserController {
      */
     async login(req, res) {
         try {
+            console.log("\n🔔 LOGIN REQUEST RECEIVED");
+            console.log("📦 Request Body:", req.body);
+
             const { email, password } = req.body;
 
             // Validate
             if (!email || !password) {
+                console.log("❌ Validation failed: Missing email or password");
                 return res.status(400).json({
                     success: false,
                     message: "Vui lòng nhập email và mật khẩu",
                 });
             }
 
-            // Tìm user
-            const user = await User.findOne({ email: email.toLowerCase() });
+            console.log("🔍 Looking for user:", email.toLowerCase());
+
+            // Tìm user (phải select passwordHash vì mặc định nó bị ẩn)
+            const user = await User.findOne({
+                email: email.toLowerCase(),
+            }).select("+passwordHash");
             if (!user) {
+                console.log("❌ User not found");
                 return res.status(401).json({
                     success: false,
                     message: "Email hoặc mật khẩu không đúng",
                 });
             }
 
+            console.log("✅ User found:", user.email);
+            console.log("🔑 Comparing password...");
+
             // Kiểm tra password
             const isPasswordValid = await bcrypt.compare(
                 password,
                 user.passwordHash
             );
+
+            console.log("🔐 Password valid:", isPasswordValid);
+
             if (!isPasswordValid) {
+                console.log("❌ Password incorrect");
                 return res.status(401).json({
                     success: false,
                     message: "Email hoặc mật khẩu không đúng",
                 });
             }
+
+            console.log("✅ Login successful!");
 
             // Tạo token
             const token = jwt.sign(

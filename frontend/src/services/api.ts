@@ -49,6 +49,28 @@ export const userApi = {
             body: JSON.stringify(data),
         });
     },
+
+    // Upload avatar
+    uploadAvatar: async (file: File) => {
+        const formData = new FormData();
+        formData.append("avatar", file);
+
+        const token = getAuthToken();
+        const response = await fetch(`${API_URL}/api/users/avatar`, {
+            method: "POST",
+            headers: {
+                ...(token && { Authorization: `Bearer ${token}` }),
+            },
+            body: formData, // Don't set Content-Type, browser will set it automatically with boundary
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || "Upload failed");
+        }
+
+        return response.json();
+    },
 };
 
 // Auth API

@@ -58,9 +58,6 @@ export const Header: React.FC = () => {
                                         <p className="text-sm font-medium text-slate-800">
                                             {currentUser.name}
                                         </p>
-                                        <p className="text-xs capitalize text-slate-500">
-                                            {currentUser.role}
-                                        </p>
                                     </div>
                                 </div>
 

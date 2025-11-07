@@ -14,9 +14,10 @@ interface UserProfile {
 }
 
 export const Profile: React.FC = () => {
-    const { setCurrentUser, currentUser } = useAppContext();
+    const { setCurrentUser, currentUser, refreshUser } = useAppContext();
     const [user, setUser] = useState<UserProfile | null>(null);
     const [loading, setLoading] = useState(true);
+    const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         name: "",
@@ -84,6 +85,48 @@ export const Profile: React.FC = () => {
         }
     };
 
+    const handleAvatarChange = async (
+        e: React.ChangeEvent<HTMLInputElement>
+    ) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        // Validate file type
+        if (!file.type.startsWith("image/")) {
+            alert("Vui lòng chọn file ảnh!");
+            return;
+        }
+
+        // Validate file size (5MB)
+        if (file.size > 5 * 1024 * 1024) {
+            alert("Kích thước ảnh phải nhỏ hơn 5MB!");
+            return;
+        }
+
+        try {
+            setUploading(true);
+            const response = await userApi.uploadAvatar(file);
+
+            // Update user state with new avatar
+            if (response.success && response.data) {
+                setUser((prev) =>
+                    prev ? { ...prev, avatar: response.data.avatar } : null
+                );
+
+                // Refresh user data in context
+                await refreshUser();
+
+                alert("Upload avatar thành công!");
+            }
+        } catch (err) {
+            alert(
+                err instanceof Error ? err.message : "Failed to upload avatar"
+            );
+        } finally {
+            setUploading(false);
+        }
+    };
+
     if (loading && !user) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -122,9 +165,23 @@ export const Profile: React.FC = () => {
                             alt={user?.name}
                             className="object-cover w-20 h-20 rounded-full"
                         />
-                        <button className="absolute bottom-0 right-0 p-2 text-white transition-colors bg-blue-600 rounded-full hover:bg-blue-700">
-                            <Camera className="w-4 h-4" />
-                        </button>
+                        <input
+                            type="file"
+                            id="avatar-upload"
+                            accept="image/*"
+                            onChange={handleAvatarChange}
+                            className="hidden"
+                        />
+                        <label
+                            htmlFor="avatar-upload"
+                            className="absolute bottom-0 right-0 p-2 text-white transition-colors bg-blue-600 rounded-full cursor-pointer hover:bg-blue-700"
+                        >
+                            {uploading ? (
+                                <Loader2 className="w-4 h-4 animate-spin" />
+                            ) : (
+                                <Camera className="w-4 h-4" />
+                            )}
+                        </label>
                     </div>
                     <div>
                         <h4 className="text-xl font-semibold text-slate-800">
@@ -133,10 +190,13 @@ export const Profile: React.FC = () => {
                         <p className="capitalize text-slate-600">
                             {user?.role}
                         </p>
-                        <button className="flex items-center mt-2 space-x-1 text-sm font-medium text-blue-600 hover:text-blue-700">
+                        <label
+                            htmlFor="avatar-upload"
+                            className="flex items-center mt-2 space-x-1 text-sm font-medium text-blue-600 cursor-pointer hover:text-blue-700"
+                        >
                             <Edit3 className="w-4 h-4" />
                             <span>Change Photo</span>
-                        </button>
+                        </label>
                     </div>
                 </div>
 

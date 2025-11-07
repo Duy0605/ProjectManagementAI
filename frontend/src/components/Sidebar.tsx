@@ -96,9 +96,6 @@ export const Sidebar: React.FC = () => {
                                     <p className="font-medium text-white truncate">
                                         {currentUser.name}
                                     </p>
-                                    <p className="text-sm capitalize text-slate-400">
-                                        {currentUser.role}
-                                    </p>
                                 </div>
                             </div>
 

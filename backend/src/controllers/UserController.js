@@ -246,10 +246,12 @@ class UserController {
                 data: {
                     user: {
                         id: user._id,
+                        _id: user._id,
                         name: user.name,
                         email: user.email,
                         role: user.role,
                         avatar: user.avatar,
+                        bio: user.bio,
                         createdAt: user.createdAt,
                     },
                 },
@@ -490,6 +492,66 @@ class UserController {
             });
         } catch (error) {
             console.error("❌ Update Profile Error:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Lỗi server, vui lòng thử lại sau",
+            });
+        }
+    }
+
+    /**
+     * Upload avatar
+     * POST /api/users/avatar
+     */
+    async uploadAvatar(req, res) {
+        try {
+            console.log("\n🔔 UPLOAD AVATAR REQUEST");
+            const userId = req.user.userId;
+
+            // Check if file was uploaded
+            if (!req.file) {
+                return res.status(400).json({
+                    success: false,
+                    message: "Vui lòng chọn ảnh để upload",
+                });
+            }
+
+            console.log("📁 File uploaded:", req.file.filename);
+            console.log("🔗 Cloudinary URL:", req.file.path);
+
+            // Update user avatar with Cloudinary URL
+            const user = await User.findByIdAndUpdate(
+                userId,
+                { avatar: req.file.path }, // Cloudinary URL
+                { new: true }
+            ).select("-passwordHash");
+
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Không tìm thấy người dùng",
+                });
+            }
+
+            console.log("✅ Avatar updated successfully");
+
+            return res.status(200).json({
+                success: true,
+                message: "Upload avatar thành công",
+                data: {
+                    avatar: user.avatar,
+                    user: {
+                        _id: user._id,
+                        name: user.name,
+                        email: user.email,
+                        avatar: user.avatar,
+                        role: user.role,
+                        bio: user.bio,
+                    },
+                },
+            });
+        } catch (error) {
+            console.error("❌ Upload Avatar Error:", error);
             return res.status(500).json({
                 success: false,
                 message: "Lỗi server, vui lòng thử lại sau",

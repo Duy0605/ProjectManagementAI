@@ -434,6 +434,68 @@ class UserController {
             });
         }
     }
+
+    /**
+     * Cập nhật profile người dùng
+     * PUT /api/users/profile
+     */
+    async updateProfile(req, res) {
+        try {
+            console.log("\n🔔 UPDATE PROFILE REQUEST");
+            const userId = req.user.userId; // Lấy từ authMiddleware
+            const { name, email, bio } = req.body;
+
+            // Tìm user
+            const user = await User.findById(userId);
+            if (!user) {
+                return res.status(404).json({
+                    success: false,
+                    message: "Không tìm thấy người dùng",
+                });
+            }
+
+            // Cập nhật thông tin
+            if (name) user.name = name;
+            if (email) {
+                // Kiểm tra email đã tồn tại chưa
+                const existingUser = await User.findOne({
+                    email: email.toLowerCase(),
+                    _id: { $ne: userId },
+                });
+                if (existingUser) {
+                    return res.status(400).json({
+                        success: false,
+                        message: "Email đã được sử dụng",
+                    });
+                }
+                user.email = email.toLowerCase();
+            }
+            if (bio !== undefined) user.bio = bio;
+
+            await user.save();
+
+            console.log("✅ Profile updated for:", user.email);
+
+            return res.status(200).json({
+                success: true,
+                message: "Cập nhật profile thành công",
+                user: {
+                    _id: user._id,
+                    name: user.name,
+                    email: user.email,
+                    role: user.role,
+                    avatar: user.avatar,
+                    bio: user.bio,
+                },
+            });
+        } catch (error) {
+            console.error("❌ Update Profile Error:", error);
+            return res.status(500).json({
+                success: false,
+                message: "Lỗi server, vui lòng thử lại sau",
+            });
+        }
+    }
 }
 
 module.exports = new UserController();

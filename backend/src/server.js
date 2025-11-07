@@ -12,6 +12,7 @@ const connectDB = require("../config/database");
 
 // Import routes
 const authRoutes = require("./routes/auth.routes");
+const userRoutes = require("./routes/user.routes");
 
 const app = express();
 const server = createServer(app);
@@ -101,6 +102,7 @@ app.get("/api/test-db", async (req, res) => {
 
 // API Routes
 app.use("/api/auth", authRoutes);
+app.use("/api/users", userRoutes);
 
 // Socket.IO connection handling
 io.on("connection", (socket) => {

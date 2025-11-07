@@ -9,6 +9,8 @@ import { AIAssistant } from "./pages/AIAssistant";
 import { Analytics } from "./pages/Analytics";
 import { Team } from "./pages/Team";
 import { Settings } from "./pages/Settings";
+import { Profile } from "./pages/Profile";
+import { RecentActivity } from "./pages/RecentActivity";
 import { Login } from "./pages/Login";
 import { Register } from "./pages/Register";
 import { ForgotPassword } from "./pages/ForgotPassword";
@@ -38,6 +40,12 @@ function App() {
                         <Route path="ai" element={<AIAssistant />} />
                         <Route path="analytics" element={<Analytics />} />
                         <Route path="team" element={<Team />} />
+                    </Route>
+
+                    {/* User-specific Routes */}
+                    <Route path="/:username" element={<Layout />}>
+                        <Route path="profile" element={<Profile />} />
+                        <Route path="activity" element={<RecentActivity />} />
                         <Route path="settings" element={<Settings />} />
                     </Route>
                 </Routes>

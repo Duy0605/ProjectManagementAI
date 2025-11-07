@@ -28,7 +28,14 @@ const userSchema = new mongoose.Schema(
         },
         avatar: {
             type: String,
-            default: "https://via.placeholder.com/150",
+            default:
+                "https://aic.com.vn/wp-content/uploads/2024/10/avatar-fb-mac-dinh-2.jpg",
+        },
+        bio: {
+            type: String,
+            trim: true,
+            maxlength: [500, "Bio cannot exceed 500 characters"],
+            default: "",
         },
         role: {
             type: String,

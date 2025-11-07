@@ -2,6 +2,7 @@ import React, {
     createContext,
     useContext,
     useState,
+    useEffect,
     type ReactNode,
 } from "react";
 import type {
@@ -12,10 +13,14 @@ import type {
     ChatMessage,
     Notification,
 } from "../types";
+import { userApi } from "../services/api";
+import { getAvatarUrl } from "../utils/avatar";
 
 interface AppContextType {
     currentUser: User | null;
     setCurrentUser: (user: User | null) => void;
+    refreshUser: () => Promise<void>;
+    isLoadingUser: boolean;
     projects: Project[];
     setProjects: (projects: Project[]) => void;
     tasks: Task[];
@@ -45,15 +50,52 @@ interface AppProviderProps {
 }
 
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
-    const [currentUser, setCurrentUser] = useState<User | null>({
-        id: "1",
-        name: "Duy",
-        email: "john@example.com",
-        avatar: "https://images.pexels.com/photos/2379004/pexels-photo-2379004.jpeg?auto=compress&cs=tinysrgb&w=150&h=150&fit=crop",
-        role: "pm",
-        skills: ["React", "Node.js", "Project Management"],
-        isOnline: true,
-    });
+    const [currentUser, setCurrentUser] = useState<User | null>(null);
+    const [isLoadingUser, setIsLoadingUser] = useState(true);
+
+    // Fetch current user function
+    const fetchCurrentUser = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                setCurrentUser(null);
+                setIsLoadingUser(false);
+                return;
+            }
+
+            const response = await userApi.getMe();
+            const userData = response.data.user;
+
+            // Map backend user data to frontend User type
+            setCurrentUser({
+                id: userData._id,
+                name: userData.name,
+                email: userData.email,
+                avatar: getAvatarUrl(userData.avatar),
+                role: userData.role,
+                skills: [],
+                isOnline: true,
+            });
+        } catch (error) {
+            console.error("Failed to fetch user:", error);
+            // If token is invalid, clear it
+            localStorage.removeItem("token");
+            setCurrentUser(null);
+        } finally {
+            setIsLoadingUser(false);
+        }
+    };
+
+    // Public function to refresh user data
+    const refreshUser = async () => {
+        setIsLoadingUser(true);
+        await fetchCurrentUser();
+    };
+
+    // Fetch current user on mount
+    useEffect(() => {
+        fetchCurrentUser();
+    }, []);
 
     const [projects, setProjects] = useState<Project[]>([
         {
@@ -130,6 +172,8 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
             value={{
                 currentUser,
                 setCurrentUser,
+                refreshUser,
+                isLoadingUser,
                 projects,
                 setProjects,
                 tasks,

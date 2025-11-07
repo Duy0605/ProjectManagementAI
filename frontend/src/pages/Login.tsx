@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { Bot, Mail, Lock, Eye, EyeOff, AlertCircle } from "lucide-react";
+import { useAppContext } from "../contexts/AppContext";
 
 export const Login: React.FC = () => {
     const navigate = useNavigate();
+    const { refreshUser } = useAppContext();
     const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
@@ -61,6 +63,9 @@ export const Login: React.FC = () => {
                 localStorage.setItem("user", JSON.stringify(data.data.user));
 
                 console.log("✅ Đăng nhập thành công:", data.data.user);
+
+                // Refresh user data trong AppContext
+                await refreshUser();
 
                 // Chuyển hướng đến trang Dashboard
                 navigate("/dashboard");

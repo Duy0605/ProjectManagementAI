@@ -79,14 +79,21 @@ const TaskCard: React.FC<{ task: Task }> = ({ task }) => {
 
             <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                    <img
-                        src={task.assignee.avatar}
-                        alt={task.assignee.name}
-                        className="object-cover w-6 h-6 rounded-full"
-                    />
-                    <span className="text-xs text-slate-600">
-                        {task.assignee.name}
-                    </span>
+                    {task.assignee && (
+                        <>
+                            <img
+                                src={
+                                    task.assignee.avatar ||
+                                    "https://via.placeholder.com/24"
+                                }
+                                alt={task.assignee.name || "Unassigned"}
+                                className="object-cover w-6 h-6 rounded-full"
+                            />
+                            <span className="text-xs text-slate-600">
+                                {task.assignee.name}
+                            </span>
+                        </>
+                    )}
                 </div>
 
                 <div className="flex items-center space-x-2">
@@ -209,9 +216,7 @@ export const KanbanBoard: React.FC = () => {
         <div className="h-full">
             <div className="flex items-center justify-between mb-6">
                 <div>
-                    <h1 className="text-2xl font-bold text-slate-800">
-                        Board
-                    </h1>
+                    <h1 className="text-2xl font-bold text-slate-800">Board</h1>
                     <p className="text-slate-600">
                         Drag and drop tasks to update their status
                     </p>
